@@ -100,7 +100,7 @@ export function arrangeWordSearch(words: string[], size: number, level: Level) {
   return null;
 }
 
-export function findWord(grid: string[], word: string): boolean {
+export function locateWord(grid: string[], word: string) {
   const size = grid.length;
   for (let r = 0; r < size; r++) {
     for (let c = 0; c < size; c++) {
@@ -116,9 +116,13 @@ export function findWord(grid: string[], word: string): boolean {
             break;
           }
         }
-        if (match) return true;
+        if (match) return { row: r, col: c, dr, dc };
       }
     }
   }
-  return false;
+  return null;
+}
+
+export function findWord(grid: string[], word: string): boolean {
+  return locateWord(grid, word) !== null;
 }

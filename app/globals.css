@@ -46,3 +46,50 @@ h3 {
   font-family: var(--font-fraunces), Georgia, serif;
   letter-spacing: -0.02em;
 }
+@keyframes pop {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.3);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-4px);
+  }
+  75% {
+    transform: translateX(4px);
+  }
+}
+
+@keyframes glow {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.55;
+  }
+}
+
+.pop {
+  animation: pop 0.35s ease;
+}
+
+.shake {
+  animation: shake 0.3s ease;
+}
+
+.hint-glow {
+  background: var(--gold);
+  animation: glow 1.2s ease-in-out infinite;
+}

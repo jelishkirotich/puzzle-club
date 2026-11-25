@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
-import WordSearchGrid from "./WordSearchGrid";
+import { useEffect, useState } from "react";
+import WordSearchGrid, { type Cell } from "./WordSearchGrid";
+import { locateWord } from "@/lib/wordsearch";
 
 type Props = {
   puzzleId: string;
@@ -10,68 +11,73 @@ type Props = {
   name: string;
 };
 
+function formatTime(total: number) {
+  return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
+}
+
 export default function WordSearchPlay({ puzzleId, rows, words, name }: Props) {
-  const [start, setStart] = useState<[number, number] | null>(null);
   const [found, setFound] = useState<string[]>([]);
   const [cells, setCells] = useState<Set<string>>(new Set());
+  const [popped, setPopped] = useState<Set<string>>(new Set());
+  const [misses, setMisses] = useState(0);
+  const [hint, setHint] = useState<string | null>(null);
+  const [shakeKey, setShakeKey] = useState(0);
   const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null);
   const [saving, setSaving] = useState(false);
   const [recorded, setRecorded] = useState(false);
+  const [startedAt, setStartedAt] = useState(() => Date.now());
+  const [elapsed, setElapsed] = useState(0);
+  const [finishedIn, setFinishedIn] = useState<number | null>(null);
 
   const done = found.length === words.length;
 
-  function handleCell(r: number, c: number) {
+  useEffect(() => {
+    if (finishedIn !== null) return;
+    const timer = setInterval(() => {
+      setElapsed(Math.floor((Date.now() - startedAt) / 1000));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [finishedIn, startedAt]);
+
+  function handleLine(line: Cell[]) {
     if (done) return;
 
-    if (!start) {
-      setStart([r, c]);
-      setMessage(null);
-      return;
-    }
-
-    const [sr, sc] = start;
-    const dr = r - sr;
-    const dc = c - sc;
-    setStart(null);
-
-    if (dr === 0 && dc === 0) return;
-
-    if (!(dr === 0 || dc === 0 || Math.abs(dr) === Math.abs(dc))) {
-      setMessage({ good: false, text: "Pick two letters in a straight line." });
-      return;
-    }
-
-    const length = Math.max(Math.abs(dr), Math.abs(dc)) + 1;
-    const stepR = Math.sign(dr);
-    const stepC = Math.sign(dc);
-    let text = "";
-    const line: string[] = [];
-
-    for (let i = 0; i < length; i++) {
-      const rr = sr + stepR * i;
-      const cc = sc + stepC * i;
-      text += rows[rr][cc];
-      line.push(`${rr}-${cc}`);
-    }
-
+    const text = line.map(([r, c]) => rows[r][c]).join("");
     const reversed = text.split("").reverse().join("");
     const match = words.find(
       (word) => !found.includes(word) && (word === text || word === reversed)
     );
 
     if (!match) {
-      setMessage({ good: false, text: "Not one of the hidden words. Try again." });
+      setMisses((count) => count + 1);
+      setShakeKey((key) => key + 1);
       return;
     }
 
+    const keys = line.map(([r, c]) => `${r}-${c}`);
     const nextFound = [...found, match];
+
     setFound(nextFound);
-    setCells(new Set([...cells, ...line]));
-    setMessage(
-      nextFound.length === words.length
-        ? { good: true, text: "Every word found." }
-        : null
-    );
+    setCells(new Set([...cells, ...keys]));
+    setPopped(new Set(keys));
+    setHint(null);
+    setMisses(0);
+
+    if (nextFound.length === words.length) {
+      const seconds = Math.floor((Date.now() - startedAt) / 1000);
+      setElapsed(seconds);
+      setFinishedIn(seconds);
+      setMessage({ good: true, text: `Every word found in ${formatTime(seconds)}.` });
+    }
+  }
+
+  function showHint() {
+    const target = words.find((word) => !found.includes(word));
+    if (!target) return;
+    const spot = locateWord(rows, target);
+    if (!spot) return;
+    setHint(`${spot.row}-${spot.col}`);
+    setMisses(0);
   }
 
   async function record() {
@@ -85,7 +91,7 @@ export default function WordSearchPlay({ puzzleId, rows, words, name }: Props) {
       const response = await fetch(`/api/puzzles/${puzzleId}/solve`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ solver: name.trim(), found }),
+        body: JSON.stringify({ solver: name.trim(), found, time: finishedIn }),
       });
       const data = await response.json();
 
@@ -103,20 +109,42 @@ export default function WordSearchPlay({ puzzleId, rows, words, name }: Props) {
   }
 
   function reset() {
-    setStart(null);
     setFound([]);
     setCells(new Set());
+    setPopped(new Set());
+    setMisses(0);
+    setHint(null);
     setMessage(null);
     setRecorded(false);
+    setFinishedIn(null);
+    setElapsed(0);
+    setStartedAt(Date.now());
   }
 
   return (
     <div>
+      <div className="mb-4 flex max-w-[460px] items-center justify-between">
+        <span className="font-display text-2xl font-bold tabular-nums">
+          {formatTime(elapsed)}
+        </span>
+        {misses >= 3 && !done && (
+          <button
+            type="button"
+            onClick={showHint}
+            className="rounded-full border border-line bg-paper px-4 py-2 text-sm font-bold transition hover:border-forest-soft"
+          >
+            Show a hint
+          </button>
+        )}
+      </div>
+
       <WordSearchGrid
         rows={rows}
         marked={cells}
-        selected={start ? `${start[0]}-${start[1]}` : null}
-        onCellClick={handleCell}
+        popCells={popped}
+        hint={hint}
+        shakeKey={shakeKey}
+        onSelectLine={handleLine}
       />
 
       <ul className="mt-6 flex flex-wrap gap-2">
