@@ -1,8 +1,10 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
 import Chat from "./Chat";
+import Leaderboard from "./Leaderboard";
 import SudokuPlay from "./SudokuPlay";
 import WordSearchPlay from "./WordSearchPlay";
 import { useDisplayName } from "@/lib/useDisplayName";
@@ -17,6 +19,36 @@ const difficultyStyle: Record<Difficulty, string> = {
 
 export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
   const [name, setName] = useDisplayName();
+  const [opened, setOpened] = useState(false);
+  const [refreshKey, setRefreshKey] = useState(0);
+  const storageKey = `puzzle-club-open-${puzzle.id}`;
+
+  useEffect(() => {
+    try {
+      if (localStorage.getItem(storageKey)) setOpened(true);
+    } catch {
+      // storage unavailable
+    }
+  }, [storageKey]);
+
+  function openChat() {
+    setOpened(true);
+    try {
+      localStorage.setItem(storageKey, "1");
+    } catch {
+      // storage unavailable
+    }
+  }
+
+  function handleSolved() {
+    openChat();
+    setRefreshKey((key) => key + 1);
+  }
+
+  const isAuthor =
+    name.trim().length > 1 &&
+    name.trim().toLowerCase() === puzzle.author.toLowerCase();
+  const chatVisible = opened || isAuthor;
 
   return (
     <div className="pt-4">
@@ -69,6 +101,7 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
               size={puzzle.size as SudokuSize}
               grid={puzzle.grid}
               name={name}
+              onSolved={handleSolved}
             />
           ) : (
             <WordSearchPlay
@@ -76,11 +109,33 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
               rows={puzzle.grid}
               words={puzzle.words}
               name={name}
+              onSolved={handleSolved}
             />
           )}
         </section>
 
-        <Chat puzzleId={puzzle.id} name={name} />
+        <div className="space-y-6">
+          <Leaderboard puzzleId={puzzle.id} name={name} refreshKey={refreshKey} />
+
+          {chatVisible ? (
+            <Chat puzzleId={puzzle.id} name={name} />
+          ) : (
+            <section className="flex h-[260px] flex-col items-center justify-center rounded-[2rem] border border-line bg-paper p-6 text-center">
+              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-sage text-forest">
+                <Lock className="h-5 w-5" />
+              </span>
+              <h2 className="mt-4 text-xl font-bold">The conversation</h2>
+              <p className="mt-1 text-[15px] text-muted">Opens when you finish.</p>
+              <button
+                type="button"
+                onClick={openChat}
+                className="mt-5 rounded-full border border-line bg-paper px-5 py-2.5 text-sm font-bold transition hover:border-forest-soft"
+              >
+                Open it now
+              </button>
+            </section>
+          )}
+        </div>
       </div>
     </div>
   );

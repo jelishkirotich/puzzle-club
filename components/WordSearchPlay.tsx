@@ -9,20 +9,29 @@ type Props = {
   rows: string[];
   words: string[];
   name: string;
+  onSolved?: () => void;
 };
 
 function formatTime(total: number) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 }
 
-export default function WordSearchPlay({ puzzleId, rows, words, name }: Props) {
+export default function WordSearchPlay({
+  puzzleId,
+  rows,
+  words,
+  name,
+  onSolved,
+}: Props) {
   const [found, setFound] = useState<string[]>([]);
   const [cells, setCells] = useState<Set<string>>(new Set());
   const [popped, setPopped] = useState<Set<string>>(new Set());
   const [misses, setMisses] = useState(0);
   const [hint, setHint] = useState<string | null>(null);
   const [shakeKey, setShakeKey] = useState(0);
-  const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null);
+  const [message, setMessage] = useState<{ good: boolean; text: string } | null>(
+    null
+  );
   const [saving, setSaving] = useState(false);
   const [recorded, setRecorded] = useState(false);
   const [startedAt, setStartedAt] = useState(() => Date.now());
@@ -101,6 +110,7 @@ export default function WordSearchPlay({ puzzleId, rows, words, name }: Props) {
       }
       setRecorded(true);
       setMessage({ good: true, text: "Counted. Well spotted." });
+      onSolved?.();
     } catch {
       setMessage({ good: false, text: "Could not reach the server. Try again." });
     } finally {

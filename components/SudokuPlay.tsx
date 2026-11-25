@@ -10,18 +10,27 @@ type Props = {
   size: SudokuSize;
   grid: string[];
   name: string;
+  onSolved?: () => void;
 };
 
 function formatTime(total: number) {
   return `${Math.floor(total / 60)}:${String(total % 60).padStart(2, "0")}`;
 }
 
-export default function SudokuPlay({ puzzleId, size, grid, name }: Props) {
+export default function SudokuPlay({
+  puzzleId,
+  size,
+  grid,
+  name,
+  onSolved,
+}: Props) {
   const [values, setValues] = useState<string[]>(grid);
   const [history, setHistory] = useState<string[][]>([]);
   const [selected, setSelected] = useState<number | null>(null);
   const [wrong, setWrong] = useState<number[]>([]);
-  const [message, setMessage] = useState<{ good: boolean; text: string } | null>(null);
+  const [message, setMessage] = useState<{ good: boolean; text: string } | null>(
+    null
+  );
   const [checking, setChecking] = useState(false);
   const [startedAt] = useState(() => Date.now());
   const [elapsed, setElapsed] = useState(0);
@@ -97,7 +106,11 @@ export default function SudokuPlay({ puzzleId, size, grid, name }: Props) {
         setElapsed(seconds);
         setSolved(true);
         setWrong([]);
-        setMessage({ good: true, text: `Solved in ${formatTime(seconds)}. Lovely work.` });
+        setMessage({
+          good: true,
+          text: `Solved in ${formatTime(seconds)}. Lovely work.`,
+        });
+        onSolved?.();
       } else if (data.wrong.length > 0) {
         setWrong(data.wrong);
         setMessage({ good: false, text: "Some squares need another look." });

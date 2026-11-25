@@ -22,6 +22,12 @@ export async function POST(request: Request, { params }: Context) {
     return fail("Add your display name first.");
   }
 
+  const rawTime = Number(body.time);
+  const timeSeconds =
+    Number.isFinite(rawTime) && rawTime > 0 && rawTime < 86400
+      ? Math.round(rawTime)
+      : null;
+
   try {
     const firestore = db();
     const puzzleRef = firestore.collection("puzzles").doc(id);
@@ -67,15 +73,18 @@ export async function POST(request: Request, { params }: Context) {
 
       if (!existing.exists) {
         const batch = firestore.batch();
-        const time = Number(body.time);
         batch.set(solveRef, {
           solver,
-          timeSeconds: Number.isFinite(time) && time > 0 ? Math.round(time) : null,
+          timeSeconds,
           createdAt: FieldValue.serverTimestamp(),
         });
-    
         batch.update(puzzleRef, { solveCount: FieldValue.increment(1) });
         await batch.commit();
+      } else if (timeSeconds !== null) {
+        const previous = existing.data()?.timeSeconds;
+        if (typeof previous !== "number" || timeSeconds < previous) {
+          await solveRef.update({ timeSeconds });
+        }
       }
     }
 
