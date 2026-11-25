@@ -94,9 +94,9 @@ export default function SudokuGrid({
         const background = isFlagged
           ? "bg-clay-soft"
           : selected === index
-            ? "bg-[#cfe0d3]"
+            ? "bg-cell-selected"
             : selectedValue && value === selectedValue
-              ? "bg-[#dde9dc]"
+              ? "bg-cell-same"
               : isPeer(index)
                 ? "bg-sage/60"
                 : isFixed

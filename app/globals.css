@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: light;
   --cream: #f6f3ec;
   --paper: #fcfbf7;
   --forest: #254f45;
@@ -14,6 +15,33 @@
   --sand: #eee6d9;
   --gold: #e5b97f;
   --gold-text: #9a7b3f;
+  --gold-soft: #f5e9d0;
+  --hero: #254f45;
+  --cell-selected: #cfe0d3;
+  --cell-same: #dde9dc;
+  --on-accent: #fcfbf7;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --cream: #101a17;
+  --paper: #182420;
+  --forest: #8ccfb4;
+  --forest-soft: #62b497;
+  --ink: #e9efe9;
+  --muted: #9bb3aa;
+  --line: #2b3c36;
+  --sage: #20352d;
+  --clay: #ea9674;
+  --clay-soft: #3a2b25;
+  --sand: #26352f;
+  --gold: #e5b97f;
+  --gold-text: #e3bd7c;
+  --gold-soft: #3a3120;
+  --hero: #1b3d34;
+  --cell-selected: #2f5246;
+  --cell-same: #284339;
+  --on-accent: #0f1a16;
 }
 
 @theme inline {
@@ -30,6 +58,10 @@
   --color-sand: var(--sand);
   --color-gold: var(--gold);
   --color-gold-text: var(--gold-text);
+  --color-gold-soft: var(--gold-soft);
+  --color-hero: var(--hero);
+  --color-cell-selected: var(--cell-selected);
+  --color-cell-same: var(--cell-same);
   --font-display: var(--font-fraunces);
   --font-sans: var(--font-dmsans);
 }
@@ -46,6 +78,12 @@ h3 {
   font-family: var(--font-fraunces), Georgia, serif;
   letter-spacing: -0.02em;
 }
+
+/* Text on accent colored buttons stays readable in both themes */
+.text-paper {
+  color: var(--on-accent);
+}
+
 @keyframes pop {
   0% {
     transform: scale(1);
@@ -81,6 +119,17 @@ h3 {
   }
 }
 
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
 .pop {
   animation: pop 0.35s ease;
 }
@@ -91,5 +140,10 @@ h3 {
 
 .hint-glow {
   background: var(--gold);
+  color: #1f3a33;
   animation: glow 1.2s ease-in-out infinite;
+}
+
+.toast-in {
+  animation: toast-in 0.25s ease;
 }

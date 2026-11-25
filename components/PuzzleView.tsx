@@ -6,6 +6,7 @@ import { ArrowLeft, Lock } from "lucide-react";
 import Chat from "./Chat";
 import Leaderboard from "./Leaderboard";
 import SudokuPlay from "./SudokuPlay";
+import { useToast } from "./Toaster";
 import WordSearchPlay from "./WordSearchPlay";
 import { useDisplayName } from "@/lib/useDisplayName";
 import type { Difficulty, PuzzleDetail } from "@/lib/puzzles";
@@ -13,11 +14,12 @@ import type { SudokuSize } from "@/lib/sudoku";
 
 const difficultyStyle: Record<Difficulty, string> = {
   Easy: "bg-sage text-forest-soft",
-  Medium: "bg-[#f5e9d0] text-gold-text",
+  Medium: "bg-gold-soft text-gold-text",
   Hard: "bg-clay-soft text-clay",
 };
 
 export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
+  const toast = useToast();
   const [name, setName] = useDisplayName();
   const [opened, setOpened] = useState(false);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -43,6 +45,7 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
   function handleSolved() {
     openChat();
     setRefreshKey((key) => key + 1);
+    toast("Solved. The conversation is open now.", "good");
   }
 
   const isAuthor =
@@ -71,7 +74,7 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
         </span>
       </div>
 
-      <h1 className="mt-4 text-4xl font-bold leading-tight md:text-5xl">
+      <h1 className="mt-4 text-3xl font-bold leading-tight sm:text-4xl md:text-5xl">
         {puzzle.title}
       </h1>
       {puzzle.note && (
@@ -80,7 +83,7 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
       <p className="mt-3 text-[15px] text-muted">by {puzzle.author}</p>
 
       <div className="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1fr)_380px]">
-        <section className="rounded-[2rem] border border-line bg-paper p-6 md:p-8">
+        <section className="rounded-[2rem] border border-line bg-paper p-5 sm:p-6 md:p-8">
           <div className="mb-6 max-w-xs">
             <label htmlFor="player" className="mb-2 block text-[15px] font-bold">
               Your display name

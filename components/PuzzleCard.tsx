@@ -10,7 +10,7 @@ import type { Difficulty, PuzzleSummary } from "@/lib/puzzles";
 
 const difficultyStyle: Record<Difficulty, string> = {
   Easy: "bg-sage text-forest-soft",
-  Medium: "bg-[#f5e9d0] text-gold-text",
+  Medium: "bg-gold-soft text-gold-text",
   Hard: "bg-clay-soft text-clay",
 };
 
@@ -28,17 +28,17 @@ export default function PuzzleCard({ puzzle }: { puzzle: PuzzleSummary }) {
   return (
     <Link
       href={`/puzzle/${puzzle.id}`}
-      className="group flex items-center gap-5 rounded-3xl border border-line bg-paper p-5 transition hover:-translate-y-0.5 hover:border-forest-soft/40 hover:shadow-sm md:p-6"
+      className="group flex items-center gap-4 rounded-3xl border border-line bg-paper p-4 transition hover:-translate-y-0.5 hover:border-forest-soft/40 hover:shadow-sm sm:gap-5 sm:p-5 md:p-6"
     >
       <div
-        className={`flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl ${
+        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl sm:h-16 sm:w-16 ${
           isSudoku ? "bg-sage text-forest" : "bg-clay-soft text-clay"
         }`}
       >
         {isSudoku ? (
-          <Grid2x2 className="h-6 w-6" strokeWidth={1.6} />
+          <Grid2x2 className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.6} />
         ) : (
-          <Type className="h-6 w-6" strokeWidth={1.6} />
+          <Type className="h-5 w-5 sm:h-6 sm:w-6" strokeWidth={1.6} />
         )}
       </div>
 
@@ -54,7 +54,7 @@ export default function PuzzleCard({ puzzle }: { puzzle: PuzzleSummary }) {
           </span>
         </div>
 
-        <h3 className="mt-2.5 text-xl font-bold">{puzzle.title}</h3>
+        <h3 className="mt-2.5 text-lg font-bold sm:text-xl">{puzzle.title}</h3>
         <p className="mt-1 truncate text-[15px] text-muted">
           {puzzle.description}
         </p>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { ArrowLeft, ArrowRight, Grid2x2, Shuffle, Type, X } from "lucide-react";
 import FilterSelect from "@/components/FilterSelect";
 import SudokuGrid from "@/components/SudokuGrid";
+import { useToast } from "@/components/Toaster";
 import WordSearchGrid from "@/components/WordSearchGrid";
 import {
   checkSudoku,
@@ -51,8 +52,8 @@ const wordSizeOptions = [
 
 const statusStyle: Record<SudokuCheck["status"], string> = {
   valid: "bg-sage text-forest",
-  many: "bg-[#f5e9d0] text-gold-text",
-  open: "bg-[#f5e9d0] text-gold-text",
+  many: "bg-gold-soft text-gold-text",
+  open: "bg-gold-soft text-gold-text",
   clash: "bg-clay-soft text-clay",
   none: "bg-clay-soft text-clay",
   empty: "",
@@ -60,6 +61,7 @@ const statusStyle: Record<SudokuCheck["status"], string> = {
 
 export default function CreatePage() {
   const router = useRouter();
+  const toast = useToast();
   const [kind, setKind] = useState<PuzzleKind>("sudoku");
   const [title, setTitle] = useState("");
   const [note, setNote] = useState("");
@@ -210,6 +212,7 @@ export default function CreatePage() {
         return;
       }
 
+      toast("Your puzzle is on the shelf.", "good");
       router.push("/");
       router.refresh();
     } catch {
@@ -242,7 +245,7 @@ export default function CreatePage() {
       <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest-soft">
         Make something for the shelf
       </p>
-      <h1 className="mt-4 text-5xl font-bold leading-[1.02] md:text-6xl">
+      <h1 className="mt-4 text-4xl font-bold leading-[1.02] sm:text-5xl md:text-6xl">
         Creating is part
         <br />
         of the fun.
@@ -252,7 +255,7 @@ export default function CreatePage() {
         Someone will be glad you did.
       </p>
 
-      <div className="mt-10 rounded-[2rem] border border-line bg-paper p-6 md:p-10">
+      <div className="mt-10 rounded-[2rem] border border-line bg-paper p-5 sm:p-6 md:p-10">
         <h2 className="text-2xl font-bold">First, the kind of puzzle</h2>
         <p className="mt-1 text-[15px] text-muted">
           Choose the format you feel like making today.
@@ -481,10 +484,10 @@ export default function CreatePage() {
           </p>
         )}
 
-        <div className="mt-9 flex items-center justify-between gap-4">
+        <div className="mt-9 flex flex-col-reverse gap-3 sm:flex-row sm:items-center sm:justify-between">
           <Link
             href="/"
-            className="inline-flex items-center gap-2.5 rounded-full border border-line bg-paper px-6 py-3.5 text-[15px] font-bold transition hover:border-forest-soft"
+            className="inline-flex items-center justify-center gap-2.5 rounded-full border border-line bg-paper px-6 py-3.5 text-[15px] font-bold transition hover:border-forest-soft"
           >
             <ArrowLeft className="h-4 w-4" />
             Back to shelf
@@ -493,7 +496,7 @@ export default function CreatePage() {
             type="button"
             onClick={handlePublish}
             disabled={submitting}
-            className="inline-flex items-center gap-2.5 rounded-full bg-forest-soft px-7 py-3.5 text-[15px] font-bold text-paper transition hover:bg-forest disabled:opacity-60"
+            className="inline-flex items-center justify-center gap-2.5 rounded-full bg-forest-soft px-7 py-3.5 text-[15px] font-bold text-paper transition hover:bg-forest disabled:opacity-60"
           >
             {submitting ? "Publishing" : "Publish puzzle"}
             <ArrowRight className="h-4 w-4" />

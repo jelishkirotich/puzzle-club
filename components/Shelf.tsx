@@ -55,13 +55,13 @@ export default function Shelf({ puzzles }: { puzzles: PuzzleSummary[] }) {
   }, [puzzles, query, kind, difficulty, sort]);
 
   return (
-    <section className="mt-14">
-      <div className="flex items-end justify-between gap-4">
+    <section className="mt-12 sm:mt-14">
+      <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.18em] text-forest-soft">
             The puzzle shelf
           </p>
-          <h2 className="mt-3 text-3xl font-bold md:text-4xl">
+          <h2 className="mt-3 text-2xl font-bold sm:text-3xl md:text-4xl">
             Pick your next little challenge
           </h2>
         </div>
@@ -74,8 +74,8 @@ export default function Shelf({ puzzles }: { puzzles: PuzzleSummary[] }) {
         </Link>
       </div>
 
-      <div className="mt-7 grid gap-3 md:grid-cols-[1fr_auto_auto_auto]">
-        <div className="relative">
+      <div className="mt-7 grid grid-cols-2 gap-3 md:grid-cols-[1fr_auto_auto_auto]">
+        <div className="relative col-span-2 md:col-span-1">
           <Search className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted" />
           <input
             type="search"
@@ -92,7 +92,9 @@ export default function Shelf({ puzzles }: { puzzles: PuzzleSummary[] }) {
           onChange={setDifficulty}
           options={difficultyOptions}
         />
-        <FilterSelect label="Sort" value={sort} onChange={setSort} options={sortOptions} />
+        <div className="col-span-2 md:col-span-1">
+          <FilterSelect label="Sort" value={sort} onChange={setSort} options={sortOptions} />
+        </div>
       </div>
 
       <div className="mt-6 flex flex-col gap-4">
