@@ -67,7 +67,13 @@ export async function POST(request: Request, { params }: Context) {
 
       if (!existing.exists) {
         const batch = firestore.batch();
-        batch.set(solveRef, { solver, createdAt: FieldValue.serverTimestamp() });
+        const time = Number(body.time);
+        batch.set(solveRef, {
+          solver,
+          timeSeconds: Number.isFinite(time) && time > 0 ? Math.round(time) : null,
+          createdAt: FieldValue.serverTimestamp(),
+        });
+    
         batch.update(puzzleRef, { solveCount: FieldValue.increment(1) });
         await batch.commit();
       }

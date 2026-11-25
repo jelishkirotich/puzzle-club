@@ -1,20 +1,46 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import { boxShape, type SudokuSize } from "@/lib/sudoku";
 
 type Props = {
   size: SudokuSize;
   values: string[];
   onChange?: (next: string[]) => void;
+  onSelect?: (index: number) => void;
   fixed?: boolean[];
   flagged?: Set<number>;
+  hideKeyboard?: boolean;
 };
 
-export default function SudokuGrid({ size, values, onChange, fixed, flagged }: Props) {
+export default function SudokuGrid({
+  size,
+  values,
+  onChange,
+  onSelect,
+  fixed,
+  flagged,
+  hideKeyboard,
+}: Props) {
   const refs = useRef<(HTMLInputElement | null)[]>([]);
+  const [selected, setSelected] = useState<number | null>(null);
   const { rows: boxRows, cols: boxCols } = boxShape(size);
   const textSize = size === 9 ? "text-xl" : size === 6 ? "text-2xl" : "text-3xl";
+
+  const boxIndex = (index: number) =>
+    Math.floor(Math.floor(index / size) / boxRows) * (size / boxCols) +
+    Math.floor((index % size) / boxCols);
+
+  function isPeer(index: number) {
+    if (selected === null) return false;
+    return (
+      Math.floor(index / size) === Math.floor(selected / size) ||
+      index % size === selected % size ||
+      boxIndex(index) === boxIndex(selected)
+    );
+  }
+
+  const selectedValue = selected !== null ? values[selected] : "";
 
   function setCell(index: number, raw: string) {
     if (!onChange) return;
@@ -49,6 +75,7 @@ export default function SudokuGrid({ size, values, onChange, fixed, flagged }: P
         const row = Math.floor(index / size);
         const col = index % size;
         const isFixed = fixed?.[index] ?? false;
+        const isFlagged = flagged?.has(index) ?? false;
 
         const right =
           col === size - 1
@@ -63,11 +90,18 @@ export default function SudokuGrid({ size, values, onChange, fixed, flagged }: P
               ? "border-b-2 border-b-forest-soft"
               : "border-b border-b-line";
 
-        const tone = flagged?.has(index)
-          ? "bg-clay-soft text-clay"
-          : isFixed
-            ? "bg-sage/70 text-forest"
-            : "bg-transparent text-ink focus:bg-sage";
+        const text = isFlagged ? "text-clay" : isFixed ? "text-forest" : "text-ink";
+        const background = isFlagged
+          ? "bg-clay-soft"
+          : selected === index
+            ? "bg-[#cfe0d3]"
+            : selectedValue && value === selectedValue
+              ? "bg-[#dde9dc]"
+              : isPeer(index)
+                ? "bg-sage/60"
+                : isFixed
+                  ? "bg-sand/60"
+                  : "bg-transparent";
 
         return (
           <input
@@ -77,12 +111,16 @@ export default function SudokuGrid({ size, values, onChange, fixed, flagged }: P
             }}
             value={value}
             readOnly={!onChange || isFixed}
-            inputMode="numeric"
+            inputMode={hideKeyboard ? "none" : "numeric"}
             aria-label={`Row ${row + 1}, column ${col + 1}`}
             onChange={(event) => setCell(index, event.target.value)}
             onKeyDown={(event) => handleKey(event, index)}
-            onFocus={(event) => event.target.select()}
-            className={`w-full min-w-0 text-center font-display font-bold outline-none ${textSize} ${tone} ${right} ${bottom}`}
+            onFocus={(event) => {
+              event.target.select();
+              setSelected(index);
+              onSelect?.(index);
+            }}
+            className={`w-full min-w-0 cursor-pointer text-center font-display font-bold outline-none ${textSize} ${text} ${background} ${right} ${bottom}`}
           />
         );
       })}

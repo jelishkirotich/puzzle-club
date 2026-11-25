@@ -1,36 +1,25 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Puzzle Club
 
-## Getting Started
+A community puzzle app where people share Sudoku and word search puzzles, solve them, and chat under each one.
 
-First, run the development server:
+Live site: https://your-live-link-here
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+![Home page](docs/home.png)
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## What it does
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+* Browse, search and filter shared puzzles
+* Create Sudoku in 4 by 4, 6 by 6 and 9 by 9 sizes, checked automatically for exactly one valid solution
+* Build word searches with a live grid preview
+* Solve puzzles with answers checked on the server, so solutions never reach the browser
+* Chat under every puzzle
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Built with
 
-## Learn More
+Next.js, TypeScript, Tailwind CSS, Firebase Firestore, deployed on Vercel
 
-To learn more about Next.js, take a look at the following resources:
+## Run it locally
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Clone the repo and run `npm install`
+2. Create `.env.local` with FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL and FIREBASE_PRIVATE_KEY
+3. Run `npm run dev`
