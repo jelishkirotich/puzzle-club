@@ -8,9 +8,12 @@ import ThemeToggle from "./ThemeToggle";
 export default function Header() {
   const pathname = usePathname();
 
+  const isActive = (href: string) =>
+    href === "/" ? pathname === "/" : pathname.startsWith(href);
+
   const linkClass = (href: string) =>
     `rounded-full px-3 py-2 text-sm font-bold transition sm:px-5 sm:py-2.5 sm:text-[15px] ${
-      pathname === href ? "bg-sand text-ink" : "text-muted hover:text-ink"
+      isActive(href) ? "bg-sand text-ink" : "text-muted hover:text-ink"
     }`;
 
   return (
@@ -28,6 +31,9 @@ export default function Header() {
         <nav className="flex items-center gap-1 sm:gap-2">
           <Link href="/" className={`${linkClass("/")} hidden sm:inline-block`}>
             Community
+          </Link>
+          <Link href="/learn" className={linkClass("/learn")}>
+            Learn
           </Link>
           <Link href="/create" className={linkClass("/create")}>
             <span className="sm:hidden">Create</span>
