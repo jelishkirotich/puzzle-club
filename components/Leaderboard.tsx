@@ -9,11 +9,11 @@ function formatTime(total: number) {
 }
 
 export default function Leaderboard({
-  puzzleId,
+  endpoint,
   name,
   refreshKey,
 }: {
-  puzzleId: string;
+  endpoint: string;
   name: string;
   refreshKey: number;
 }) {
@@ -22,7 +22,7 @@ export default function Leaderboard({
   useEffect(() => {
     let active = true;
 
-    fetch(`/api/puzzles/${puzzleId}/leaderboard`, { cache: "no-store" })
+    fetch(endpoint, { cache: "no-store" })
       .then((response) => (response.ok ? response.json() : { entries: [] }))
       .then((data) => {
         if (active) setEntries(data.entries);
@@ -34,7 +34,7 @@ export default function Leaderboard({
     return () => {
       active = false;
     };
-  }, [puzzleId, refreshKey]);
+  }, [endpoint, refreshKey]);
 
   const me = name.trim().toLowerCase();
 

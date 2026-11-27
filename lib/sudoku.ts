@@ -8,7 +8,7 @@ export function boxShape(size: SudokuSize) {
   return { rows: 3, cols: 3 };
 }
 
-function boxOf(index: number, size: SudokuSize) {
+export function boxOf(index: number, size: SudokuSize) {
   const { rows, cols } = boxShape(size);
   const r = Math.floor(index / size);
   const c = index % size;
@@ -40,13 +40,17 @@ export function findConflicts(grid: string[], size: SudokuSize): Set<number> {
   return bad;
 }
 
-type SolveResult = {
+export type SolveResult = {
   count: number;
   solution: string[] | null;
   gaveUp: boolean;
 };
 
-function solveSudoku(grid: string[], size: SudokuSize, limit = 2): SolveResult {
+export function solveSudoku(
+  grid: string[],
+  size: SudokuSize,
+  limit = 2
+): SolveResult {
   const total = size * size;
   const full = (1 << size) - 1;
   const cells = grid.map((value) => (value ? Number(value) : 0));

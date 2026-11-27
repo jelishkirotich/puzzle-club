@@ -100,7 +100,7 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
 
           {puzzle.kind === "sudoku" ? (
             <SudokuPlay
-              puzzleId={puzzle.id}
+              endpoint={`/api/puzzles/${puzzle.id}/solve`}
               size={puzzle.size as SudokuSize}
               grid={puzzle.grid}
               name={name}
@@ -118,7 +118,11 @@ export default function PuzzleView({ puzzle }: { puzzle: PuzzleDetail }) {
         </section>
 
         <div className="space-y-6">
-          <Leaderboard puzzleId={puzzle.id} name={name} refreshKey={refreshKey} />
+          <Leaderboard
+            endpoint={`/api/puzzles/${puzzle.id}/leaderboard`}
+            name={name}
+            refreshKey={refreshKey}
+          />
 
           {chatVisible ? (
             <Chat puzzleId={puzzle.id} name={name} />

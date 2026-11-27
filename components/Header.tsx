@@ -23,7 +23,7 @@ export default function Header() {
           <span className="flex h-10 w-10 items-center justify-center rounded-full border border-forest text-forest sm:h-11 sm:w-11">
             <Grid2x2 className="h-5 w-5" strokeWidth={1.6} />
           </span>
-          <span className="font-display text-xl font-bold tracking-tight sm:text-2xl">
+          <span className="hidden font-display text-xl font-bold tracking-tight sm:inline sm:text-2xl">
             Puzzle Club
           </span>
         </Link>
@@ -31,6 +31,9 @@ export default function Header() {
         <nav className="flex items-center gap-1 sm:gap-2">
           <Link href="/" className={`${linkClass("/")} hidden sm:inline-block`}>
             Community
+          </Link>
+          <Link href="/play" className={linkClass("/play")}>
+            Play
           </Link>
           <Link href="/learn" className={linkClass("/learn")}>
             Learn

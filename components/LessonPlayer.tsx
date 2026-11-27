@@ -11,11 +11,19 @@ type Props = {
   next: { slug: string; title: string } | null;
 };
 
+function practiceFor(lesson: Lesson) {
+  if (lesson.slug === "start-small") return { size: 4, level: "Easy" };
+  if (lesson.level === "Beginner") return { size: 9, level: "Easy" };
+  if (lesson.level === "Intermediate") return { size: 9, level: "Medium" };
+  return { size: 9, level: "Hard" };
+}
+
 export default function LessonPlayer({ lesson, next }: Props) {
   const [index, setIndex] = useState(0);
   const total = lesson.steps.length;
   const step = lesson.steps[index];
   const last = index === total - 1;
+  const practice = practiceFor(lesson);
 
   useEffect(() => {
     function onKey(event: KeyboardEvent) {
@@ -75,22 +83,22 @@ export default function LessonPlayer({ lesson, next }: Props) {
             </button>
           )}
 
+          {last && (
+            <a
+              href={`/play/start?size=${practice.size}&level=${practice.level}`}
+              className="inline-flex items-center gap-2 rounded-full bg-forest-soft px-6 py-3 text-[15px] font-bold text-paper transition hover:bg-forest"
+            >
+              Practice on a {practice.size} by {practice.size} {practice.level}
+              <ArrowRight className="h-4 w-4" />
+            </a>
+          )}
+
           {last && next && (
             <Link
               href={`/learn/${next.slug}`}
-              className="inline-flex items-center gap-2 rounded-full bg-forest-soft px-6 py-3 text-[15px] font-bold text-paper transition hover:bg-forest"
+              className="inline-flex items-center gap-2 rounded-full border border-line bg-paper px-6 py-3 text-[15px] font-bold transition hover:border-forest-soft"
             >
-              Next lesson: {next.title}
-              <ArrowRight className="h-4 w-4" />
-            </Link>
-          )}
-
-          {last && !next && (
-            <Link
-              href="/"
-              className="inline-flex items-center gap-2 rounded-full bg-forest-soft px-6 py-3 text-[15px] font-bold text-paper transition hover:bg-forest"
-            >
-              Try a puzzle
+              Next lesson
               <ArrowRight className="h-4 w-4" />
             </Link>
           )}

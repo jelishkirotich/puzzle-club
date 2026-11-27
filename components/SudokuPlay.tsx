@@ -6,7 +6,9 @@ import SudokuGrid from "./SudokuGrid";
 import { findConflicts, type SudokuSize } from "@/lib/sudoku";
 
 type Props = {
-  puzzleId: string;
+  endpoint: string;
+  extra?: Record<string, unknown>;
+  requireName?: boolean;
   size: SudokuSize;
   grid: string[];
   name: string;
@@ -18,7 +20,9 @@ function formatTime(total: number) {
 }
 
 export default function SudokuPlay({
-  puzzleId,
+  endpoint,
+  extra,
+  requireName = true,
   size,
   grid,
   name,
@@ -82,7 +86,7 @@ export default function SudokuPlay({
   }
 
   async function check() {
-    if (name.trim().length < 2) {
+    if (requireName && name.trim().length < 2) {
       setMessage({ good: false, text: "Add your display name above first." });
       return;
     }
@@ -90,10 +94,15 @@ export default function SudokuPlay({
     const seconds = Math.floor((Date.now() - startedAt) / 1000);
     setChecking(true);
     try {
-      const response = await fetch(`/api/puzzles/${puzzleId}/solve`, {
+      const response = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ solver: name.trim(), grid: values, time: seconds }),
+        body: JSON.stringify({
+          ...extra,
+          solver: name.trim(),
+          grid: values,
+          time: seconds,
+        }),
       });
       const data = await response.json();
 
@@ -128,6 +137,7 @@ export default function SudokuPlay({
   }
 
   const digits = Array.from({ length: size }, (_, i) => String(i + 1));
+  const padColumns = size === 9 ? "grid-cols-5" : "grid-cols-4";
   const padButton =
     "h-12 w-full rounded-2xl border border-line bg-paper text-[15px] font-bold transition hover:border-forest-soft disabled:opacity-50";
 
@@ -158,7 +168,7 @@ export default function SudokuPlay({
         hideKeyboard
       />
 
-      <div className="mt-5 grid max-w-[460px] grid-cols-5 gap-2">
+      <div className={`mt-5 grid max-w-[460px] gap-2 ${padColumns}`}>
         {digits.map((digit) => (
           <button
             key={digit}
